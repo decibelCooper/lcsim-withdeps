@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Jun 09 16:03:12 CDT 2017
+lcsim-detector-framework-3.4.pom>=
+lcsim-detector-framework-3.4-bin.jar>=
+lcsim-detector-framework-3.4.jar>=

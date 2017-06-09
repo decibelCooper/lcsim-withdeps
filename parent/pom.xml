@@ -21,6 +21,16 @@
     </scm>
     <repositories>
         <repository>
+	    <id>project.local</id>
+	    <name>project</name>
+	    <url>file:${project.basedir}/dependencies</url>
+	</repository>
+        <repository>
+	    <id>project.local2</id>
+	    <name>project</name>
+	    <url>file:${project.basedir}/../dependencies</url>
+	</repository>
+<!--        <repository>
             <id>freehep-repo-public</id>
             <name>FreeHEP Maven Public</name>
             <url>http://srs.slac.stanford.edu/nexus/content/groups/freehep-maven2-public/</url>
@@ -40,21 +50,31 @@
             <releases>
                 <enabled>true</enabled>
             </releases>
-        </repository>
+        </repository> -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
+	    <id>project.local</id>
+	    <name>project</name>
+	    <url>file:${project.basedir}/dependencies</url>
+	</pluginRepository>
+<!--        <pluginRepository>
             <id>freehep-maven-plugin-repo</id>
             <name>Freehep Plugin Repository</name>
             <url>http://srs.slac.stanford.edu/nexus/content/groups/freehep-maven2-public/</url>
-        </pluginRepository>
+        </pluginRepository> -->
     </pluginRepositories>
     <distributionManagement>
         <repository>
+	    <id>project.local</id>
+	    <name>project</name>
+	    <url>file:${project.basedir}/dependencies</url>
+	</repository>
+<!--        <repository>
             <id>lcsim-repo-releases</id>
             <name>LCSIM Releases maven repository</name>
             <url>http://srs.slac.stanford.edu/nexus/content/repositories/lcsim-maven2-releases/</url>
-        </repository>
+        </repository> -->
         <snapshotRepository>
             <id>lcsim-repo-snapshots</id>
             <name>LCSIM Snapshots maven repository</name>

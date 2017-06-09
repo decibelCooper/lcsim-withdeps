@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <artifactId>global</artifactId>
+    <groupId>org.freehep</groupId>
+    <version>19</version>
+    <relativePath />
+  </parent>
+  
+  <groupId>org.freehep</groupId>
+  <artifactId>base</artifactId>
+  <version>13.1.3</version>
+  <packaging>pom</packaging>
+  
+  <name>FreeHEP Base</name>
+  <description>FreeHEP Base Library</description>
+  <url>http://java.freehep.org/</url>
+  
+  <repositories>
+    <repository>
+      <id>freehep-maven</id>
+      <name>Maven FreeHEP</name>
+      <url>http://java.freehep.org/maven2</url>
+    </repository>
+  </repositories>
+
+    <scm>
+        <url>svnFreehepRepo</url>
+        <connection>scm:svn:svn://svn.freehep.org/svn/freehep/trunk/base</connection>
+        <developerConnection>scm:svn:svn://svn.freehep.org/svn/freehep/trunk/base</developerConnection>
+    </scm>
+  
+      
+  <modules>
+    <module>freehep-application</module>
+    <module>freehep-argv</module>
+    <module>freehep-commandline</module>
+    <module>freehep-commanddispatcher</module>
+<!--    <module>freehep-export</module> use freehep-graphicsbase instead -->
+<!--    <module>freehep-io</module> using Mark's version 2.2.1 from github -->
+    <module>freehep-parameterdatabase</module>
+    <module>freehep-record</module>
+    <module>freehep-swing</module>
+    <module>freehep-util</module>
+<!--    <module>freehep-webutil</module> needs to be released independently -->
+    <module>freehep-xml</module>
+  </modules>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-application</artifactId>
+        <version>2.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-argv</artifactId>
+        <version>2.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-commandline</artifactId>
+        <version>2.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-commanddispatcher</artifactId>
+        <version>2.0.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-parameterdatabase</artifactId>
+        <version>2.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-record</artifactId>
+        <version>3.0.8</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-swing</artifactId>
+        <version>2.0.7</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-util</artifactId>
+        <version>2.0.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-xml</artifactId>
+        <version>2.1.7</version>
+      </dependency>      
+      <dependency>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-io</artifactId>
+        <version>2.2.2</version>
+      </dependency>      
+    </dependencies>
+  </dependencyManagement>
+  
+</project>

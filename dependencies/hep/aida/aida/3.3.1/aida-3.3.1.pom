@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<name>AIDA</name>
+	<description>Abstract Interfaces for Data Analysis</description>
+	<groupId>hep.aida</groupId>
+	<artifactId>aida</artifactId>
+	<packaging>nar</packaging>
+	<version>3.3.1</version>
+
+	<!-- General -->
+	<repositories>
+		<repository>
+			<id>freehep-maven</id>
+			<name>FreeHEP Maven</name>
+			<url>http://java.freehep.org/maven2</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>freehep-maven</id>
+			<name>FreeHEP Maven</name>
+			<url>http://java.freehep.org/maven2</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<url>http://aida.freehep.org/index.html</url>
+	<issueManagement>
+		<system>jira</system>
+		<url>
+			http://java.freehep.org/redirect?project=aida&amp;area=bugs
+		</url>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<id>duns</id>
+			<name>Mark Donszelmann</name>
+			<email>Mark.Donszelmann@slac.stanford.edu</email>
+			<organization>
+				Stanford Linear Accelerator Center
+			</organization>
+			<roles>
+				<role>Architect</role>
+				<role>Release Manager</role>
+			</roles>
+			<timezone>-8</timezone>
+		</developer>
+		<!-- FIXME add others -->
+	</developers>
+
+	<licenses>
+		<license>
+			<name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
+			<url>http://www.gnu.org/copyleft/lesser.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>
+			scm:cvs:pserver:anoncvs@cvs.apache.org:/cvs/aida:aida
+		</connection>
+		<developerConnection>
+			scm:cvs:pserver:${user.name}@cvs.apache.org:/cvs/aida:aida
+		</developerConnection>
+		<url>
+			http://java.freehep.org/jcvslet/JCVSlet/list/{pom.artifactId}
+		</url>
+	</scm>
+
+	<ciManagement>
+		<system>continuum</system>
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<configuration>
+					<address>
+						Mark.Donszelmann@slac.stanford.edu
+					</address>
+				</configuration>
+			</notifier>
+		</notifiers>
+	</ciManagement>
+
+	<organization>
+		<name>AIDA</name>
+		<url>http://aida.freehep.org/</url>
+	</organization>
+
+	<inceptionYear>2001</inceptionYear>
+
+	<distributionManagement>
+		<repository>
+			<id>freehep-maven</id>
+			<name>FreeHEP Maven Repository</name>
+			<url>scpexe://svn.freehep.org/nfs/slac/g/jas/maven2</url>
+		</repository>
+		<site>
+			<id>aida</id>
+			<!--
+				<url>scp://svn.freehep.org/nfs/slac/g/jas/workspace/freehep/__star__/web/freehep/${pom.artifactId}</url>
+			-->
+		</site>
+	</distributionManagement>
+
+
+	<!-- still project specific -->
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>
+					maven-project-info-reports-plugin
+				</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<sourceDirectory>src/java</sourceDirectory>
+		<testSourceDirectory>src/test</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>web/schemas/${pom.version}</directory>
+				<includes>
+					<include>aida.dtd</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<arguments>-DupdateReleaseInfo</arguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.freehep</groupId>
+				<artifactId>freehep-aid-plugin</artifactId>
+				<version>2.0</version>
+				<configuration>
+					<timestampDirectory>target</timestampDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>aida (java)</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<configDirectory>
+								${basedir}/config
+							</configDirectory>
+							<sourceDirectory>
+								${basedir}/src/aid
+							</sourceDirectory>
+							<targetDirectory>
+								${basedir}/src/java
+							</targetDirectory>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>aida (cpp)</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generator>CPPHeaderGenerator</generator>
+							<configDirectory>
+								${basedir}/config
+							</configDirectory>
+							<sourceDirectory>
+								${basedir}/src/aid
+							</sourceDirectory>
+							<targetDirectory>
+								${basedir}/src/cpp
+							</targetDirectory>
+						</configuration>
+					</execution>
+                    
+					<execution>
+						<id>aida (python)</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generator>PythonClassGenerator</generator>
+							<configDirectory>${basedir}/config</configDirectory>
+							<sourceDirectory>${basedir}/src/aid</sourceDirectory>
+							<targetDirectory>${basedir}/src/python</targetDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.freehep</groupId>
+				<artifactId>freehep-nar-plugin</artifactId>
+				<version>2.0-alpha-10</version>
+				<extensions>true</extensions>
+				<configuration>
+					<cpp>
+						<includePaths>
+							<includePath>src/cpp</includePath>
+						</includePaths>
+					</cpp>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>	
+</project>
