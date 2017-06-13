@@ -7,7 +7,7 @@ package org.lcsim.recon.tracking.trfmaterial;
  * @version $Id: Material.java 3377 2014-10-20 21:26:08Z ngraf $
  * 
  * =================================================================================================
- * Repository path: $HeadURL: svn://svn.freehep.org/lcdet/projects/lcsim/tags/lcsim-3.4/trf/src/main/java/org/lcsim/recon/tracking/trfmaterial/Material.java $ 
+ * Repository path: $HeadURL: svn://svn.freehep.org/lcdet/projects/lcsim/tags/lcsim-3.8/trf/src/main/java/org/lcsim/recon/tracking/trfmaterial/Material.java $ 
  * Last committed: $Revision: 3377 $ 
  * Last changed by: $Author: ngraf $ 
  * Last changed date: $Date: 2014-10-20 16:26:08 -0500 (Mon, 20 Oct 2014) $ 

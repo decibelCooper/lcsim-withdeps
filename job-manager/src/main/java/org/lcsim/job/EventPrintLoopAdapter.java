@@ -1,6 +1,5 @@
 package org.lcsim.job;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.freehep.record.loop.RecordEvent;
@@ -18,14 +17,6 @@ class EventPrintLoopAdapter implements RecordListener {
      * Setup the logger.
      */
     private static Logger LOGGER = Logger.getLogger(EventPrintLoopAdapter.class.getName());
-    static {
-        if (LOGGER.getLevel() == null) {
-            System.out.println("EventPrintLoopAdapter: set level to ALL");
-            LOGGER.setLevel(Level.ALL);
-        } else {
-            System.out.println("EventPrintLoopAdapter: level " + LOGGER.getLevel() + " from config");
-        }
-    }
 
     /**
      * Sequence number of events processed.
@@ -53,7 +44,6 @@ class EventPrintLoopAdapter implements RecordListener {
         Object record = recordEvent.getRecord();
         if (record instanceof EventHeader) {
             EventHeader event = (EventHeader) recordEvent.getRecord();
-            //System.out.println("EventPrintLoopAdapter.recordSupplied - " + event.getEventNumber());
             if (eventSequence % printInterval == 0) {
                 LOGGER.info("event: " + event.getEventNumber() + "; time: " + event.getTimeStamp() + "; seq: " 
                         + eventSequence);

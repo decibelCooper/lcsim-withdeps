@@ -151,4 +151,18 @@ public class LCSimHepRepConverter implements HepRepConverter
         factory.createHepRepPoint(z,0,0,0);
         factory.createHepRepPoint(z,0,0,2000);                            
     }
+    
+    /**
+     * Find a converter for a class.
+     * @param colType the class to convert to heprep
+     * @return The converter or null if does not exist.
+     */
+    public HepRepCollectionConverter findConverter(Class<?> colType) {
+        for (HepRepCollectionConverter converter : converters) {
+            if (converter.canHandle(colType)) {
+                return converter;
+            }
+        }
+        return null;
+    }
 }

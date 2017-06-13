@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import org.freehep.record.loop.DefaultRecordLoop;
+import org.freehep.record.loop.RecordLoop.Command;
 import org.freehep.record.source.NoSuchRecordException;
 import org.freehep.record.source.RecordSource;
 import org.lcsim.conditions.ConditionsManager;
@@ -183,5 +184,25 @@ public class LCSimLoop extends DefaultRecordLoop {
     
     public void dispose() {
         super.dispose();
+    }
+    
+    protected void handleClientError(final Throwable x) {
+        //System.out.println("LCSimLoop caught client error ...");
+        x.printStackTrace();
+        this._exception = x;
+        this.execute(Command.STOP);
+        throw new RuntimeException(x);
+    }
+    
+    protected void handleSourceError(final Throwable x) {
+        //System.out.println("LCSimLoop caught source error ...");
+        x.printStackTrace();
+        this._exception = x;
+        this.execute(Command.STOP);
+        throw new RuntimeException(x);
+    }
+       
+    public Throwable getLastException() {
+        return this._exception;
     }
 }

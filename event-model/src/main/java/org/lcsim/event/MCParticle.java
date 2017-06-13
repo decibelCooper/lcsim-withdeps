@@ -51,6 +51,12 @@ public interface MCParticle extends Particle
      * @return The particle's color flow.
      */
     int[] getColorFlow();
+    
+    /**
+     * Get the momentum at the particle's endpoint.
+     * @return the momentum at the particle's endpoint
+     */
+    float[] getMomentumAtEndpoint();
 
     /**
      * Simulation flags.

@@ -6,10 +6,9 @@ package org.lcsim.lcio;
  */
 public interface LCIOConstants
 {
-   //int MAJORVERSION = 1;
-   //int MINORVERSION = 60;
+   // major and minor version numbers
    int MAJORVERSION = 2;
-   int MINORVERSION = 0;
+   int MINORVERSION = 7;
     
    // bits in flag words
    // SimCalorimeterHit (CH)

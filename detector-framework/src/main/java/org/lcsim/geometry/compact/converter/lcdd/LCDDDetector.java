@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 
+import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -21,6 +22,7 @@ import org.lcsim.geometry.compact.Field;
 import org.lcsim.geometry.compact.Readout;
 import org.lcsim.geometry.compact.Subdetector;
 import org.lcsim.geometry.compact.converter.lcdd.util.Author;
+import org.lcsim.geometry.compact.converter.lcdd.util.Box;
 import org.lcsim.geometry.compact.converter.lcdd.util.Calorimeter;
 import org.lcsim.geometry.compact.converter.lcdd.util.Constant;
 import org.lcsim.geometry.compact.converter.lcdd.util.Define;
@@ -34,13 +36,16 @@ import org.lcsim.geometry.compact.converter.lcdd.util.LCDD;
 import org.lcsim.geometry.compact.converter.lcdd.util.LCDDMaterialHelper;
 import org.lcsim.geometry.compact.converter.lcdd.util.Limit;
 import org.lcsim.geometry.compact.converter.lcdd.util.LimitSet;
+import org.lcsim.geometry.compact.converter.lcdd.util.PhysVol;
 import org.lcsim.geometry.compact.converter.lcdd.util.Position;
 import org.lcsim.geometry.compact.converter.lcdd.util.Region;
 import org.lcsim.geometry.compact.converter.lcdd.util.Rotation;
 import org.lcsim.geometry.compact.converter.lcdd.util.SensitiveDetector;
 import org.lcsim.geometry.compact.converter.lcdd.util.Tracker;
+import org.lcsim.geometry.compact.converter.lcdd.util.Tube;
 import org.lcsim.geometry.compact.converter.lcdd.util.UnsegmentedCalorimeter;
 import org.lcsim.geometry.compact.converter.lcdd.util.VisAttributes;
+import org.lcsim.geometry.compact.converter.lcdd.util.Volume;
 import org.lcsim.geometry.util.IDDescriptor;
 import org.lcsim.util.cache.FileCache;
 
@@ -64,6 +69,7 @@ class LCDDDetector extends org.lcsim.geometry.compact.Detector {
     }
 
     Document writeLCDD(String filename) throws IOException, JDOMException {
+        
         LCDD lcdd = new LCDD();
 
         checksum = calculateChecksum(compact);
@@ -95,6 +101,7 @@ class LCDDDetector extends org.lcsim.geometry.compact.Detector {
 
         /* constants */
         for (org.lcsim.geometry.compact.Constant c : getConstants().values()) {
+            // System.out.println("adding constant [" + c.getName() + "] = [" + c.getValue() + "] with value = [" + String.valueOf(c.getValue()) + "]");
             define.addConstant(new Constant(c.getName(), String.valueOf(c.getValue())));
         }
         
@@ -116,6 +123,12 @@ class LCDDDetector extends org.lcsim.geometry.compact.Detector {
         // Vis attributes.
         writeVisAttribs(lcdd);
 
+        // world volume
+        writeWorldVolume(lcdd);
+        
+        // tracking volume
+        writeTrackingVolume(lcdd);
+        
         // Subdetectors.
         writeSubdetectors(lcdd, idMap);
 
@@ -301,9 +314,55 @@ class LCDDDetector extends org.lcsim.geometry.compact.Detector {
         LCDDMaterialHelper helper = new LCDDMaterialHelper(getXMLMaterialManager());
         helper.copyToLCDD(compact, lcdd);
     }
+    
+    private void writeWorldVolume(LCDD lcdd) {
+        Box worldSolid = new Box("world_box");
+        worldSolid.setAttribute("x", "world_x");
+        worldSolid.setAttribute("y", "world_y");
+        worldSolid.setAttribute("z", "world_z");
+        lcdd.getSolids().addSolid(worldSolid);
 
+        Volume worldVolume = new Volume("world_volume");
+        worldVolume.setSolid(worldSolid);        
+        lcdd.getStructure().setWorldVolume(worldVolume);
+        
+        Element world = new Element("world");
+        world.setAttribute("ref", worldVolume.getRefName());
+        lcdd.getSetup().addContent(world);
+    }
+    
+    private void writeTrackingVolume(LCDD lcdd) {
+        
+        Tube trackingSolid = new Tube("tracking_cylinder");
+        trackingSolid.setAttribute("rmax", "tracking_region_radius");
+        trackingSolid.setAttribute("z", "2*tracking_region_zmax");
+        trackingSolid.setAttribute("deltaphi", String.valueOf(2 * Math.PI));
+        
+        Define define = lcdd.getDefine();        
+        Position pos = new Position("tracking_region_pos");
+        if (define.getConstant("tracking_region_z") != null) {
+            double trackingRegionZ = 0;
+            try {
+                trackingRegionZ = define.getConstant("tracking_region_z").getConstantValue();
+            } catch (DataConversionException e) {
+                throw new RuntimeException(e);
+            }
+            pos.setZ(trackingRegionZ);
+        }
+        define.addPosition(pos);
+                
+        lcdd.getSolids().addSolid(trackingSolid);
+
+        Volume trackingVolume = new Volume("tracking_volume");
+        trackingVolume.setSolid(trackingSolid);
+        lcdd.getStructure().setTrackingVolume(trackingVolume);
+        PhysVol trackingPhysVol = new PhysVol(trackingVolume);
+        trackingPhysVol.setPosition(pos);
+        lcdd.getWorldVolume().addPhysVol(trackingPhysVol);
+    }
+        
     public String getName() {
-        return "GeomConverter";
+        return "lcsim";
     }
 
     private String getVersion() {
@@ -315,6 +374,7 @@ class LCDDDetector extends org.lcsim.geometry.compact.Detector {
     }
 
     private long calculateChecksum(Element top) throws IOException {
+        
         // Write out in canonical format to calculate checksum
         // ignoring comments and whitespace
         Iterator iter = top.getDescendants(new ContentFilter(ContentFilter.COMMENT));

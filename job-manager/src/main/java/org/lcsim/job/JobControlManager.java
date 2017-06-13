@@ -30,12 +30,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.freehep.record.loop.RecordEvent;
+import org.freehep.record.loop.RecordListener;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -49,7 +50,6 @@ import org.lcsim.util.Driver;
 import org.lcsim.util.DriverAdapter;
 import org.lcsim.util.cache.FileCache;
 import org.lcsim.util.loop.LCIOEventSource;
-import org.lcsim.util.loop.LCSimConditionsManagerImplementation;
 import org.lcsim.util.loop.LCSimLoop;
 import org.lcsim.util.xml.ClasspathEntityResolver;
 import org.lcsim.util.xml.JDOMExpressionFactory;
@@ -494,9 +494,9 @@ public class JobControlManager {
         loop = new LCSimLoop();
         if (this.eventPrintInterval != null) {
             loop.addRecordListener(new EventPrintLoopAdapter(this.eventPrintInterval));
-            LOGGER.config("Event marker printing enabled with interval " + eventPrintInterval);
+            LOGGER.config("Added EventPrintLoopAdapter with event print interval " + eventPrintInterval);
         } else {
-            LOGGER.config("Event marker printing disabled.");
+            LOGGER.config("EventPrintLoopAdapter is disabled.");
         }
     }
 
@@ -551,7 +551,7 @@ public class JobControlManager {
                     this.addVariableDefinition(key, value);
                 }
                 LOGGER.config("loaded variable definitions from " + propFileName);
-            }            
+            }
         }
 
         // Process the user variable definitions.
@@ -818,12 +818,14 @@ public class JobControlManager {
     }
 
     /**
-     * Process a single event.
+     * Process a single event by calling the record listeners on the loop.
      *
-     * @param event
+     * @param event the input event
      */
-    public void processEvent(final EventHeader event) {
-        this.getDriverAdapter().recordSupplied(new RecordEvent(loop, event));
+    public void processEvent(final EventHeader event) {        
+        for (RecordListener listener : loop.getRecordListeners()) {
+            listener.recordSupplied(new RecordEvent(loop, event));
+        }
     }
 
     /**
@@ -895,8 +897,9 @@ public class JobControlManager {
     }
 
     /**
-     * Rewrite the XML steering file after resolving variables (done externally). The output path is set by command line
-     * argument to "-w".
+     * Rewrite the XML steering file after resolving variables (done externally).
+     * <p> 
+     * The output path is set by command line argument to "-w" option.
      *
      * @param doc The XML steering doc with variables substituted.
      */
@@ -916,76 +919,79 @@ public class JobControlManager {
     /**
      * Execute a job using the current parameters.
      */
-    public boolean run() {
-        
+    public void run() {
+
         LOGGER.info("running job");
 
         // If setup was not called first, then abort the job.
-        if (!isSetup) { 
-            LOGGER.info("Aborting job!  Setup was never called.");
-            return false;
+        if (!isSetup) {
+            throw new IllegalStateException("The job manager was never setup!");
         }
 
-        // Dry run selected. No events will be processed.
-        if (dryRun) {
-            LOGGER.info("Executed dry run.  No events processed!");
-            return false;
-        }
+        if (!dryRun) {
 
-        boolean okay = true;
-
-        try {
-            // Add the LCIO files to the loop.
-            loop.setLCIORecordSource(new LCIOEventSource(this.getClass().getSimpleName(), inputFiles));
-            
-            // Setup the conditions system by calling setDetector if run and detector name are set.
-            conditionsSetup.setup();
-            
-            // Post-init of conditions system (by default does nothing).
-            conditionsSetup.postInitialize();
-            
             // Setup dummy detector if selected.
-            //if (dummyDetector) {
-            //    LOGGER.info("Using dummy detector for conditions system!");
-            //    loop.setDummyDetector("dummy");
-            //}
+            // if (dummyDetector) {
+            // LOGGER.info("Using dummy detector for conditions system!");
+            // loop.setDummyDetector("dummy");
+            // }
 
             this.jobStart = System.currentTimeMillis();
 
             LOGGER.info("Job started: " + new Date(jobStart));
 
-            if (this.skipEvents > 0) {
-                LOGGER.info("Skipping " + skipEvents + " events.");
-                loop.skip(skipEvents);
-            }
-
-            // Execute the loop.
-            final long processedEvents = loop.loop(numberOfEvents, this.printDriverStatistics ? System.out : null);
-            if (numberOfEvents != -1 && processedEvents != numberOfEvents) {
-                LOGGER.info("End of file was reached.");
-            }
-            LOGGER.info("Job processed " + processedEvents + " events.");
-            this.jobEnd = System.currentTimeMillis();
-
-            LOGGER.info("Job ended: " + new Date(this.jobEnd));
-            final long elapsed = this.jobStart - this.jobEnd;
-            LOGGER.info("Job took " + elapsed + " which is " + elapsed / processedEvents + " ms/event.");
-
-        } catch (final Exception e) {
-            LOGGER.log(Level.SEVERE, "A fatal error occurred during the job.", e);
-            okay = false;
-        } finally {
             try {
-                // Dispose of the loop.
-                loop.dispose();
-            } catch (final Exception e) {
-                LOGGER.log(Level.WARNING, "An error occurred during job cleanup.", e);
-                okay = false;
-            }
-        }
+                
+                // Add the LCIO files to the loop.
+                loop.setLCIORecordSource(new LCIOEventSource(this.getClass().getSimpleName(), inputFiles));
 
-        // Return true or false depending on whether job was successfully executed.
-        return okay;
+                // Setup the conditions system by calling setDetector if run and detector name are set.
+                conditionsSetup.setup();
+
+                // Post-init of conditions system (by default does nothing).
+                conditionsSetup.postInitialize();
+                
+                // Skip events.
+                if (this.skipEvents > 0) {
+                    LOGGER.info("Skipping " + skipEvents + " events ...");
+                    loop.skip(skipEvents);
+                    LOGGER.info("Done skipping events.");
+                }
+                
+                // Execute the loop.
+                final long processedEvents = loop.loop(numberOfEvents, this.printDriverStatistics ? System.out : null);
+                
+                // Check if there was an error that was caught which stopped event processing.
+                if (loop.getLastException() != null) {
+                    LOGGER.log(Level.SEVERE, "Job was stopped due to an event processing error.", loop.getLastException());
+                }
+
+                // Print some job stats.
+                LOGGER.info("Job processed " + processedEvents + " events.");
+                this.jobEnd = System.currentTimeMillis();
+                LOGGER.info("Job ended: " + new Date(this.jobEnd));
+                final long elapsed = this.jobEnd - this.jobStart;                
+                LOGGER.info("Job took " + (elapsed / 1000.) + " seconds.");
+                if (processedEvents > 0) {
+                    LOGGER.info("Event processing took " + ((double) elapsed / (double) processedEvents) + " ms/event or " 
+                            + ((double) processedEvents/((double) elapsed / 1000.)) + " events/second.");
+                } else {
+                    LOGGER.warning("No events were processed!");
+                }
+                
+            } catch (final Exception e) {
+                LOGGER.log(Level.SEVERE, "A fatal error occurred when running the job.", e);
+            } finally {
+                try {
+                    loop.dispose();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
+        } else {
+            // Dry run selected. No events will be processed.
+            LOGGER.info("Executed dry run.  No events processed!");
+        }
     }
 
     /**
@@ -1223,12 +1229,15 @@ public class JobControlManager {
      * Setup the file cache.
      */
     private void setupFileCache() {
-        if (cacheDirectory != null) {
+        if (fileCache == null) {
             try {
-                fileCache = new FileCache();
-                fileCache.setCacheDirectory(cacheDirectory);
+                fileCache = new FileCache();                
+                // Set cache dir from setting in steering, if present.
+                if (cacheDirectory != null) {
+                    fileCache.setCacheDirectory(cacheDirectory);
+                }
                 fileCache.setPrintStream(null);
-                LOGGER.config("File cache created at " + cacheDirectory);
+                LOGGER.config("File cache created at " + fileCache.getCacheDirectory().getPath());
             } catch (final IOException x) {
                 throw new RuntimeException(x);
             }
@@ -1334,9 +1343,8 @@ public class JobControlManager {
         // Print out the input file list.
         this.printInputFileList();
 
-        if (inputFiles.size() == 0) {
-            LOGGER.info("No input files were provided by the steering file or command line options.  Dry run will be enabled.");
-            this.dryRun = true;
+        if (inputFiles.size() == 0 && !this.dryRun) {
+            throw new RuntimeException("No input files were provided by the steering file or command line options.");
         }
     }
 
@@ -1374,17 +1382,14 @@ public class JobControlManager {
             LOGGER.config("dryRun: " + dryRun);
         }
 
-        // The cache directory. Defaults to the current directory.
+        // Cache directory for downloading files (can be null which is okay).
         final Element cacheDirElement = control.getChild("cacheDirectory");
         if (cacheDirElement != null) {
             cacheDirectory = new File(cacheDirElement.getText());
             if (!cacheDirectory.exists()) {
                 throw new RuntimeException("cacheDirectory does not exist at location: " + cacheDirElement.getText());
             }
-        } else {
-            // Cache directory defaults to user home dir.
-            cacheDirectory = new File(System.getProperties().get("user.dir").toString());
-        }
+        } 
 
         LOGGER.config("cacheDirectory: " + cacheDirectory);
 
@@ -1484,5 +1489,9 @@ public class JobControlManager {
     
     public ConditionsSetup getConditionsSetup() {
         return this.conditionsSetup;
+    }
+    
+    public void setEventPrintInterval(long eventPrintInterval) {
+        this.eventPrintInterval = eventPrintInterval;
     }
 }

@@ -3,7 +3,6 @@ package org.lcsim.util.heprep;
 import hep.graphics.heprep.HepRepFactory;
 import hep.graphics.heprep.HepRepInstance;
 import hep.graphics.heprep.HepRepInstanceTree;
-import hep.graphics.heprep.HepRepPoint;
 import hep.graphics.heprep.HepRepType;
 import hep.graphics.heprep.HepRepTypeTree;
 import hep.physics.vec.Hep3Vector;
@@ -30,9 +29,11 @@ import org.lcsim.util.swim.HelixSwimmer;
  */
 class ReconstructedParticleConverterNew implements HepRepCollectionConverter
 {
+    
+    private static final double[] ORIGIN = {0, 0, 0};
     RandomColorMap rcolorMap;
 
-    private static final double[] zero = { 0, 0, 0 };
+    private static final double[] zero = {0, 0, 0};
     
     public ReconstructedParticleConverterNew()
     {
@@ -143,10 +144,9 @@ class ReconstructedParticleConverterNew implements HepRepCollectionConverter
         double trackingRMax = detector.getConstants().get("tracking_region_radius").getValue();
         double trackingZMax = detector.getConstants().get("tracking_region_zmax").getValue();
 
-        double[] origin = TrackUtil.getOrigin(collection.get(0));
-        double[] field = detector.getFieldMap().getField(origin);
-        HelixSwimmer helix = TrackUtil.getHelixSwimmer(collection, field);
-     
+        double[] field = detector.getFieldMap().getField(ORIGIN);        
+        HelixSwimmer helix = new HelixSwimmer(field[2]);
+             
         for (Track t : (List<Track>) collection)
         {                        
             helix.setTrack(t);

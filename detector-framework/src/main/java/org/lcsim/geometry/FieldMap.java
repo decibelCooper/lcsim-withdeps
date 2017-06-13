@@ -25,7 +25,6 @@ public interface FieldMap
      * 
      * @param position The position at which the field is requested
      * @return The field.
-     * @deprecated @use getField(double[], double[])
      */
     public double[] getField( double[] position );
 

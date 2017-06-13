@@ -15,10 +15,16 @@ import org.lcsim.detector.DetectorStore;
 import org.lcsim.detector.IDetectorElement;
 import org.lcsim.detector.ILogicalVolume;
 import org.lcsim.detector.IPhysicalVolume;
+import org.lcsim.detector.IRotation3D;
+import org.lcsim.detector.ITransform3D;
+import org.lcsim.detector.ITranslation3D;
 import org.lcsim.detector.LogicalVolume;
 import org.lcsim.detector.ParametersStore;
 import org.lcsim.detector.PhysicalVolume;
 import org.lcsim.detector.PhysicalVolumeNavigatorStore;
+import org.lcsim.detector.Rotation3D;
+import org.lcsim.detector.Transform3D;
+import org.lcsim.detector.Translation3D;
 import org.lcsim.detector.converter.lcdd.MaterialElementConverter;
 import org.lcsim.detector.converter.lcdd.MaterialMixtureConverter;
 import org.lcsim.detector.converter.lcdd.MaterialsConverter;
@@ -34,21 +40,23 @@ import org.lcsim.geometry.subdetector.PolyconeSupport;
 import org.reflections.Reflections;
 
 public class DetectorConverter implements IDetectorConverter {
+    
     // Map of class to converter.
-    Map<Class, ISubdetectorConverter> subdetectorConverters = new HashMap<Class, ISubdetectorConverter>();
+    private Map<Class, ISubdetectorConverter> subdetectorConverters = new HashMap<Class, ISubdetectorConverter>();
 
     // The parameters converter.
-    ParametersConverter paramCnv = new ParametersConverter();
+    private ParametersConverter paramCnv = new ParametersConverter();
 
     // Materials converters.
-    MaterialsConverter materialCnv = new MaterialsConverter();
-    MaterialElementConverter elemCnv = new MaterialElementConverter();
-    MaterialMixtureConverter matCnv = new MaterialMixtureConverter();
+    private MaterialsConverter materialCnv = new MaterialsConverter();
+    private MaterialElementConverter elemCnv = new MaterialElementConverter();
+    private MaterialMixtureConverter matCnv = new MaterialMixtureConverter();
 
     // The SystemMap for setting up the IdentifierHelpers.
-    SystemMap sysMap;
+    private SystemMap sysMap;
 
     public IPhysicalVolume convert(Detector detector, Document doc) throws JDOMException, IOException {
+        
         // Clear out old DetectorStore store before building new detector.
         DetectorStore.getInstance().clear();
 
@@ -108,10 +116,6 @@ public class DetectorConverter implements IDetectorConverter {
     }
 
     private void addSubdetectorConverter(ISubdetectorConverter s) {
-        // if (subdetectorConverters.get(s.getSubdetectorType()) != null) {
-        // throw new IllegalArgumentException("Already have converter for <"
-        // + s.getSubdetectorType().getCanonicalName() + "> !");
-        // }
         subdetectorConverters.put(s.getSubdetectorType(), s);
     }
 
@@ -173,12 +177,11 @@ public class DetectorConverter implements IDetectorConverter {
                 // Get the top level Subdetector node back.
                 DetectorElement subdetDE = (DetectorElement) subdetector.getDetectorElement();
 
-                // Check if a DetectorElement was created. Some compact
-                // "detector" objects
-                // are not really detectors but dead material so this check is
-                // necessary
+                // Check if a DetectorElement was created. Some compact "detector" objects
+                // are not really detectors but dead material so this check is necessary
                 // to avoid errors.
                 if (subdetDE != null) {
+                    
                     // Make the Parameters from the compact detector element
                     // and assign to the Subdetector's DetectorElement.
                     subdetDE.setParameters(ParametersStore.getInstance().get(subdetector.getName()));
@@ -200,28 +203,41 @@ public class DetectorConverter implements IDetectorConverter {
     }
 
     private void buildTrackingVolume(ILogicalVolume world, Detector detector) {
+        
         Map<String, Constant> constants = detector.getConstants();
 
-        if (constants.get("tracking_region_zmax") == null || constants.get("tracking_region_radius") == null) {
-            throw new RuntimeException("Missing parameters for defining tracking region!");
+        if (constants.get("tracking_region_zmax") == null) {
+            throw new RuntimeException("Missing required tracking_region_zmax parameter in compact.xml file.");
         }
-
         double zmax = constants.get("tracking_region_zmax").getValue();
+        
+        if (constants.get("tracking_region_radius") == null) {
+            throw new RuntimeException("Missing required tracking_region_radius parameter in compact.xml file.");
+        }              
         double radius = constants.get("tracking_region_radius").getValue();
-
+        
         Tube trackingTube = new Tube("tracking_region_tube", 0, radius, zmax);
 
-        LogicalVolume trackingLV = new LogicalVolume("tracking_region", trackingTube, MaterialStore.getInstance().get(
-                "Air"));
+        LogicalVolume trackingLV = new LogicalVolume("tracking_region", trackingTube, MaterialStore.getInstance().get("Air"));
+        
+        double x, y, z;
+        x = y = z = 0;
+        if (constants.get("tracking_region_z") != null) {
+            z = constants.get("tracking_region_z").getValue();
+        }
+        
+        ITranslation3D pos = new Translation3D(x, y, z);
+        IRotation3D rot = new Rotation3D();
+        ITransform3D trans = new Transform3D(pos, rot);
 
-        new PhysicalVolume(null, "tracking_region", trackingLV, world, 0);
+        new PhysicalVolume(trans, "tracking_region", trackingLV, world, 0);
     }
 
     private IPhysicalVolume buildWorldVolume(Detector detector) {
         Map<String, Constant> constants = detector.getConstants();
 
         if (constants.get("world_x") == null || constants.get("world_y") == null || constants.get("world_z") == null) {
-            throw new RuntimeException("Missing world_x, world_y, or world_z!");
+            throw new RuntimeException("Missing required constant for defining the world volume.");
         }
 
         double x = constants.get("world_x").getValue();
@@ -239,10 +255,7 @@ public class DetectorConverter implements IDetectorConverter {
         return pvWorld;
     }
 
-    // Converts the subdetectors in a detector to a map of subsystems to system
-    // id.
-    // TODO: Must be a better way to setup these associations in the
-    // DetectorIdentifierHelper.
+    // Converts the subdetectors in a detector to a map of subsystems to system id.
     public static final SystemMap makeSystemMap(Detector d) {
         SystemMap m = new SystemMap();
 

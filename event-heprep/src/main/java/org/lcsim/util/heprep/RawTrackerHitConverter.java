@@ -52,16 +52,20 @@ class RawTrackerHitConverter implements HepRepCollectionConverter
           // Loop over hits and draw them as lines.
           for (RawTrackerHit hit : (List<RawTrackerHit>)collection) {
               try {
-                  SiSensor sensor = (SiSensor)hit.getDetectorElement();
-                  Collection<SiSensorElectrodes> trodes = sensor.getReadoutElectrodes();
-                  SiStrips strips = (SiStrips)trodes.toArray()[0];
-                  LineSegment3D line = strips.getStrip(hit.getIdentifierFieldValue("strip"));
-                  ITransform3D transform = strips.getLocalToGlobal();
-                  Hep3Vector startPoint = transform.transformed(line.getStartPoint());
-                  Hep3Vector endPoint = transform.transformed(line.getEndPoint());
-                  HepRepInstance instance = factory.createHepRepInstance(instanceTree, typeX);
-                  factory.createHepRepPoint(instance, startPoint.x(), startPoint.y(), startPoint.z());
-                  factory.createHepRepPoint(instance, endPoint.x(), endPoint.y(), endPoint.z());
+                  if (hit.getDetectorElement() != null) {
+                      SiSensor sensor = (SiSensor)hit.getDetectorElement();
+                      if (sensor != null) {
+                          Collection<SiSensorElectrodes> trodes = sensor.getReadoutElectrodes();
+                          SiStrips strips = (SiStrips)trodes.toArray()[0];
+                          LineSegment3D line = strips.getStrip(hit.getIdentifierFieldValue("strip"));
+                          ITransform3D transform = strips.getLocalToGlobal();
+                          Hep3Vector startPoint = transform.transformed(line.getStartPoint());
+                          Hep3Vector endPoint = transform.transformed(line.getEndPoint());
+                          HepRepInstance instance = factory.createHepRepInstance(instanceTree, typeX);
+                          factory.createHepRepPoint(instance, startPoint.x(), startPoint.y(), startPoint.z());
+                          factory.createHepRepPoint(instance, endPoint.x(), endPoint.y(), endPoint.z());
+                      }
+                  }
               } catch (Exception e) {
                   e.printStackTrace();
               }
@@ -76,38 +80,41 @@ class RawTrackerHitConverter implements HepRepCollectionConverter
 
        // Get the ID dictionary and field information.
        IIdentifierDictionary dict = meta.getIDDecoder().getSubdetector().getDetectorElement().getIdentifierHelper().getIdentifierDictionary();
-       int fieldIdx = dict.getFieldIndex("side");
-       int sideIdx = dict.getFieldIndex("strip");
        
-       for (RawTrackerHit hit : hits) {
-              
-           // The "side" and "strip" fields needs to be stripped from the ID for sensor lookup.
-           IExpandedIdentifier expId = dict.unpack(hit.getIdentifier());
-           expId.setValue(fieldIdx, 0);
-           expId.setValue(sideIdx, 0);
-           IIdentifier strippedId = dict.pack(expId);
+       if (dict != null && dict.hasField("side") && dict.hasField("strip")) {
+           int fieldIdx = dict.getFieldIndex("side");
+           int sideIdx = dict.getFieldIndex("strip");
        
-           // Find the sensor DetectorElement.
-           List<IDetectorElement> des = DetectorElementStore.getInstance().find(strippedId);
-           if (des == null || des.size() == 0) {
-               throw new RuntimeException("Failed to find any DetectorElements with stripped ID <0x" + Long.toHexString(strippedId.getValue()) + ">.");
-           }
-           else if (des.size() == 1) {
-               hit.setDetectorElement((SiSensor)des.get(0));
-           }
-           else {
-               // Use first sensor found, which should work unless there are sensors with duplicate IDs.
-               for (IDetectorElement de : des) {
-                   if (de instanceof SiSensor) {
-                       hit.setDetectorElement((SiSensor)de);
-                       break;
-                   }
+           for (RawTrackerHit hit : hits) {
+
+               // The "side" and "strip" fields needs to be stripped from the ID for sensor lookup.
+               IExpandedIdentifier expId = dict.unpack(hit.getIdentifier());
+               expId.setValue(fieldIdx, 0);
+               expId.setValue(sideIdx, 0);
+               IIdentifier strippedId = dict.pack(expId);
+
+               // Find the sensor DetectorElement.
+               List<IDetectorElement> des = DetectorElementStore.getInstance().find(strippedId);
+               if (des == null || des.size() == 0) {
+                   throw new RuntimeException("Failed to find any DetectorElements with stripped ID <0x" + Long.toHexString(strippedId.getValue()) + ">.");
                }
-           }   
-           
-           // No sensor was found.
-           if (hit.getDetectorElement() == null) {
-               throw new RuntimeException("No sensor was found for hit with stripped ID <0x" + Long.toHexString(strippedId.getValue()) + ">.");
+               else if (des.size() == 1) {
+                   hit.setDetectorElement((SiSensor)des.get(0));
+               }
+               else {
+                   // Use first sensor found, which should work unless there are sensors with duplicate IDs.
+                   for (IDetectorElement de : des) {
+                       if (de instanceof SiSensor) {
+                           hit.setDetectorElement((SiSensor)de);
+                           break;
+                       }
+                   }
+               }   
+
+               // No sensor was found.
+               if (hit.getDetectorElement() == null) {
+                   throw new RuntimeException("No sensor was found for hit with stripped ID <0x" + Long.toHexString(strippedId.getValue()) + ">.");
+               }
            }
        }
    }

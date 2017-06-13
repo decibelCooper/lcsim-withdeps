@@ -24,8 +24,10 @@ import org.lcsim.util.swim.HelixSwimmer;
  * @author Jeremy McCormick <jeremym@slac.stanford.edu>
  * @version $Id: TrackConverter.java,v 1.7 2012/10/18 19:32:49 jeremy Exp $
  */
-class TrackConverter implements HepRepCollectionConverter {
+public class TrackConverter implements HepRepCollectionConverter {
 
+    private static final double[] ORIGIN = {0, 0, 0};
+    
     public boolean canHandle(Class k) {
         return Track.class.isAssignableFrom(k);
     }
@@ -50,11 +52,8 @@ class TrackConverter implements HepRepCollectionConverter {
         double trackingRMax = detector.getConstants().get("tracking_region_radius").getValue();
         double trackingZMax = detector.getConstants().get("tracking_region_zmax").getValue();
 
-        double[] origin = TrackUtil.getOrigin(firstTrack);
-        double[] field = detector.getFieldMap().getField(origin);
-        
-        HelixSwimmer helix = TrackUtil.getHelixSwimmer(trackList, field);
-        //System.out.println("swimming with helix of type " + helix.getClass().getCanonicalName());
+        double[] field = detector.getFieldMap().getField(ORIGIN);        
+        HelixSwimmer helix = new HelixSwimmer(field[2]);
         
         HepRepType typeX = factory.createHepRepType(typeTree, name);
         typeX.addAttValue("layer", LCSimHepRepConverter.PARTICLES_LAYER);

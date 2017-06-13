@@ -20,21 +20,24 @@ import org.lcsim.material.XMLMaterialManager;
  * @author tonyj
  */
 public class LCDD extends Element {
+    
     private Map materials = new HashMap();
-    Volume worldVolume = null;
-    Volume trackingVolume = null;
     LCDDMaterialHelper matHelper = new LCDDMaterialHelper(XMLMaterialManager.getDefaultMaterialManager());
 
     public LCDD() {
         super("lcdd");
-
         build();
     }
 
+    /**
+     * Builds an empty LCDD XML skeleton into this object.
+     */
     private void build() {
+        
         addNamespaceDeclaration(Namespace.getNamespace("lcdd", "http://www.lcsim.org/schemas/lcdd/1.0"));
 
-        setAttribute("noNamespaceSchemaLocation", "http://www.lcsim.org/schemas/lcdd/1.0/lcdd.xsd", Namespace.getNamespace("xs", "http://www.w3.org/2001/XMLSchema-instance"));
+        setAttribute("noNamespaceSchemaLocation", "http://www.lcsim.org/schemas/lcdd/1.0/lcdd.xsd", 
+                Namespace.getNamespace("xs", "http://www.w3.org/2001/XMLSchema-instance"));
 
         Header header = new Header();
         addContent(header);
@@ -53,59 +56,19 @@ public class LCDD extends Element {
 
         Element display = new Element("display");
         addContent(display);
-
-        // Add an invisible vis settings that shows daughters.
-        // VisAttributes invisible = new VisAttributes("InvisibleWithDaughters");
-        // invisible.setVisible(false);
-        // invisible.setShowDaughters(true);
-        // this.add(invisible);
-
-        // Add an invisible vis settings that shows daughters.
-        // VisAttributes invisibleNoDau = new VisAttributes("InvisibleNoDaughters");
-        // invisibleNoDau.setVisible(false);
-        // invisibleNoDau.setShowDaughters(false);
-        // this.add(invisibleNoDau);
-
+       
         Element gdml = new Element("gdml");
         addContent(gdml);
-
         gdml.addContent(new Define());
-
         gdml.addContent(new Element("materials"));
-
         Solids solids = new Solids();
         gdml.addContent(solids);
-
         Structure structure = new Structure();
         gdml.addContent(structure);
-
-        Box worldSolid = new Box("world_box");
-        worldSolid.setAttribute("x", "world_x");
-        worldSolid.setAttribute("y", "world_y");
-        worldSolid.setAttribute("z", "world_z");
-        solids.addSolid(worldSolid);
-
-        this.worldVolume = new Volume("world_volume");
-        worldVolume.setSolid(worldSolid);
-        structure.setWorldVolume(worldVolume);
-
-        Tube trackingSolid = new Tube("tracking_cylinder");
-        trackingSolid.setAttribute("rmax", "tracking_region_radius");
-        trackingSolid.setAttribute("z", "2*tracking_region_zmax");
-        trackingSolid.setAttribute("deltaphi", String.valueOf(2 * Math.PI));
-        solids.addSolid(trackingSolid);
-
-        this.trackingVolume = new Volume("tracking_volume");
-        trackingVolume.setSolid(trackingSolid);
-        structure.setTrackingVolume(trackingVolume);
-        worldVolume.addPhysVol(new PhysVol(trackingVolume));
 
         Element setup = new Element("setup");
         setup.setAttribute("name", "Default");
         setup.setAttribute("version", "1.0");
-        Element world = new Element("world");
-        world.setAttribute("ref", worldVolume.getRefName());
-        setup.addContent(world);
         gdml.addContent(setup);
 
         Element fields = new Element("fields");
@@ -151,7 +114,7 @@ public class LCDD extends Element {
         Volume trackingVolume = structure.getTrackingVolume();
         trackingVolume.setMaterial(getTrackingMaterial());
 
-        // Move to end
+        // Move tracking volume definition to end of XML block.
         structure.removeContent(trackingVolume);
         structure.addContent(trackingVolume);
 
@@ -164,7 +127,7 @@ public class LCDD extends Element {
         Volume worldVolume = structure.getWorldVolume();
         worldVolume.setMaterial(getWorldMaterial());
 
-        // Move to end
+        // Move world volume definition to end of XML block.
         structure.removeContent(worldVolume);
         structure.addContent(worldVolume);
 
@@ -183,6 +146,10 @@ public class LCDD extends Element {
 
     public Solids getSolids() {
         return (Solids) getChild("gdml").getChild("solids");
+    }
+    
+    public Element getSetup() {
+        return getChild("gdml").getChild("setup");
     }
 
     public Solid getSolid(String name) {
@@ -254,24 +221,15 @@ public class LCDD extends Element {
         return (Structure) getChild("gdml").getChild("structure");
     }
 
-    // FIXME Weird stuff going on with this method.
     public Material getMaterial(String name) throws JDOMException {
-        // System.out.println("LCDD.getMaterial - " + name);
-
         Material mat = (Material) materials.get(name);
-
-        // System.out.println("found material - " + name);
 
         /**
          * This may be a material that was not defined in the materials block. Attempt to look it up using the
-         * global materials manager.
-         * 
-         * If this fails, the material reference is probably invalid/undefined.
+         * global materials manager.  If this fails, the material reference is probably invalid/undefined.
          * 
          */
         if (mat == null) {
-            // System.out.println("resolving mat ref - " + name);
-
             // This call will push material XML references into the LCDD object. (???)
             matHelper.resolveLCDDMaterialReference(name, this);
         }
@@ -397,9 +355,6 @@ public class LCDD extends Element {
             throw new RuntimeException("Picked a null mother volume.");
         }
 
-        // System.out.println("subdet " + subdet.getElement().getAttributeValue("name") + " -> "
-        // + motherVolume.getAttributeValue("name") + "; insideTrackingVolume=" + inside);
-
         return motherVolume;
     }
 
@@ -420,11 +375,11 @@ public class LCDD extends Element {
     }
 
     public Volume getWorldVolume() {
-        return this.worldVolume;
+        return this.getStructure().getWorldVolume();
     }
 
     public Volume getTrackingVolume() {
-        return this.trackingVolume;
+        return this.getStructure().getTrackingVolume();
     }
 
     public Volume getVolume(String name) {
@@ -462,7 +417,6 @@ public class LCDD extends Element {
         Element gdml = getChild("gdml");
 
         // Find the world and tracking volumes in the target document.
-
         Element targetWorld = null;
         Element targetTracking = null;
         for (Object o : gdml.getChild("structure").getChildren()) {
@@ -477,9 +431,7 @@ public class LCDD extends Element {
         // Process top level sections in the source GDML document.
         for (Object o1 : root.getChildren()) {
             Element section = (Element) o1;
-
-            // System.out.println("merging in section " + section.getName());
-
+            
             // Ignore the setup section of the source document.
             if (!section.getName().equals("setup")) {
                 Element target = gdml.getChild(section.getName());
@@ -489,7 +441,8 @@ public class LCDD extends Element {
                     Element element = (Element) o2;
 
                     // Check if physvols need to be merged into the target tracking or world volumes.
-                    if (element.getName().equals("volume") && (element.getAttributeValue("name").equals("world_volume") || element.getAttributeValue("name").equals("tracking_volume"))) {
+                    if (element.getName().equals("volume") && (element.getAttributeValue("name").equals("world_volume") 
+                            || element.getAttributeValue("name").equals("tracking_volume"))) {
                         Element targetVol = null;
 
                         if (element.getAttributeValue("name").equals("world_volume")) {
@@ -501,7 +454,8 @@ public class LCDD extends Element {
                         for (Object o : element.getChildren("physvol")) {
                             Element physvol = (Element) o;
                             boolean skip = false;
-                            if (targetTracking != null && physvol.getChild("volumeref").getAttributeValue("ref").equals("tracking_volume"))
+                            if (targetTracking != null 
+                                    && physvol.getChild("volumeref").getAttributeValue("ref").equals("tracking_volume"))
                                 skip = true;
                             if (!skip)
                                 targetVol.addContent((Element) physvol.clone());

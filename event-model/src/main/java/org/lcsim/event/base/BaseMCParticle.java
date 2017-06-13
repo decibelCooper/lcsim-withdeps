@@ -13,6 +13,8 @@ import hep.physics.particle.properties.ParticleType;
 import hep.physics.vec.BasicHep3Vector;
 import hep.physics.vec.Hep3Vector;
 import hep.physics.vec.HepLorentzVector;
+
+import org.apache.commons.lang3.NotImplementedException;
 import org.lcsim.event.MCParticle;
 
 /**
@@ -28,6 +30,7 @@ public class BaseMCParticle extends BasicParticle implements MCParticle
     protected double charge; 
     protected float[] spin = new float[3];
     protected int[] colorFlow = new int[2];
+    protected float[] momentumAtEndpoint = new float[3];
     protected double time;
     
     /**
@@ -130,6 +133,14 @@ public class BaseMCParticle extends BasicParticle implements MCParticle
     {
         return colorFlow;
     }           
+    
+    public float[] getMomentumAtEndpoint() {
+        return momentumAtEndpoint;
+    }
+    
+    public void setMomentumAtEndpoint(float[] momentumAtEndpoint) {
+        this.momentumAtEndpoint = momentumAtEndpoint;
+    }
         
     protected class Status implements SimulatorStatus {
     	int simulatorStatus;

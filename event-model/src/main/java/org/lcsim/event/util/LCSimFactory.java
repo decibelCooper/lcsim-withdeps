@@ -1,13 +1,15 @@
 package org.lcsim.event.util;
 
-import hep.physics.event.generator.MCEvent;
 import hep.physics.event.generator.GeneratorFactory;
+import hep.physics.event.generator.MCEvent;
 import hep.physics.particle.BasicParticle;
 import hep.physics.particle.Particle;
 import hep.physics.particle.properties.ParticleType;
 import hep.physics.particle.properties.UnknownParticleIDException;
 import hep.physics.vec.Hep3Vector;
 import hep.physics.vec.HepLorentzVector;
+
+import org.apache.commons.lang3.NotImplementedException;
 import org.lcsim.event.MCParticle;
 import org.lcsim.event.MCParticle.SimulatorStatus;
 import org.lcsim.event.base.BaseLCSimEvent;
@@ -73,6 +75,11 @@ public class LCSimFactory extends GeneratorFactory
         public int[] getColorFlow()
         {
             return colorFlow;
+        }
+        
+        public float[] getMomentumAtEndpoint() 
+        {
+            throw new NotImplementedException("The getMomentumAtEndpoint method is not implemented for this class.");
         }
     }
     private static class Status implements SimulatorStatus

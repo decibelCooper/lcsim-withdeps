@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.lcsim.event.MCParticle;
 
 /**
@@ -39,6 +40,7 @@ public class SIOMCParticle implements MCParticle
     private SimulatorStatus simStatus = new Status();
     protected float[] spin = new float[3];
     protected int[] colorFlow = new int[2];
+    protected float[] momentumAtEndpoint = new float[3];
 
     private List temp = new ArrayList();
 
@@ -87,6 +89,13 @@ public class SIOMCParticle implements MCParticle
         if (hasEndPoint)
         {
             endPoint = new BasicHep3Vector(in.readDouble(), in.readDouble(), in.readDouble());
+            
+            // Read endpoint momentum for versions 2.6 and greater.
+            if (version > 2006) {
+                momentumAtEndpoint[0] = in.readFloat();
+                momentumAtEndpoint[1] = in.readFloat();
+                momentumAtEndpoint[2] = in.readFloat();
+            }
         }
 
         // Spin and colorflow for versions 1.60 and greater.
@@ -304,6 +313,11 @@ public class SIOMCParticle implements MCParticle
             out.writeDouble(endPoint.x());
             out.writeDouble(endPoint.y());
             out.writeDouble(endPoint.z());
+            
+            // Write momentum at endpoint supported in LCIO version 2.6 and greater.
+            out.writeFloat(particle.getMomentumAtEndpoint()[0]);
+            out.writeFloat(particle.getMomentumAtEndpoint()[1]);
+            out.writeFloat(particle.getMomentumAtEndpoint()[2]);
         }
 
         // Spin.
@@ -336,6 +350,10 @@ public class SIOMCParticle implements MCParticle
     public int[] getColorFlow()
     {
         return colorFlow;
+    }
+    
+    public float[] getMomentumAtEndpoint() {
+        return momentumAtEndpoint;
     }
 
     private class Status implements SimulatorStatus

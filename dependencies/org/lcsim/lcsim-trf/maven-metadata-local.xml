@@ -3,10 +3,10 @@
   <groupId>org.lcsim</groupId>
   <artifactId>lcsim-trf</artifactId>
   <versioning>
-    <release>3.4</release>
+    <release>3.8</release>
     <versions>
-      <version>3.4</version>
+      <version>3.8</version>
     </versions>
-    <lastUpdated>20170609210317</lastUpdated>
+    <lastUpdated>20170613224739</lastUpdated>
   </versioning>
 </metadata>

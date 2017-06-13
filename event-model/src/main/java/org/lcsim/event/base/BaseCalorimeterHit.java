@@ -110,6 +110,10 @@ public class BaseCalorimeterHit extends BaseHit implements CalorimeterHit {
     public double getEnergyError() {
         return energyError;
     }
+
+    public void setTime(double time) { 
+        this.time = time; 
+    }
              
     protected void calculateCorrectedEnergy() {
         getIDDecoder().setID(id);

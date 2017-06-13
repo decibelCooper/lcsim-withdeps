@@ -135,13 +135,9 @@ abstract class AbstractTestBeam extends LCDDSubdetector {
                 if (sensitive)
                     sliceVolume.setSensitiveDetector(sens);
 
-                /*
-                 * FIXME: these need to be called automatically whenever a new volume is created
-                 * --JM
-                 */
                 setRegion(lcdd, slice, sliceVolume);
                 setLimitSet(lcdd, slice, sliceVolume);
-                setVisAttributes(lcdd, node, sliceVolume);
+                setVisAttributes(lcdd, slice, sliceVolume);
 
                 structure.addVolume(sliceVolume);
 
@@ -159,7 +155,7 @@ abstract class AbstractTestBeam extends LCDDSubdetector {
                 ++sliceCount;
             }
 
-            setVisAttributes(lcdd, node, layerVolume);
+            setVisAttributes(lcdd, layer, layerVolume);
             structure.addVolume(layerVolume);
 
             for (int i = 0; i < repeat; i++) {
