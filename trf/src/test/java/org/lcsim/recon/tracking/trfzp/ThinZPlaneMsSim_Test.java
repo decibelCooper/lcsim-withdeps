@@ -59,7 +59,7 @@ public class ThinZPlaneMsSim_Test extends TestCase
         Assert.assertTrue( scattered.get(IY) == trv.get(IY) );
         Assert.assertTrue( scattered.get(IDXDZ) != trv.get(IDXDZ) );
         Assert.assertTrue( scattered.get(IDYDZ) != trv.get(IDYDZ) );
-        Assert.assertTrue( scattered.get(IQP) != trv.get(IQP) );
+        Assert.assertTrue( scattered.get(IQP) == trv.get(IQP) ); // q/p NOT q/pT
         if(debug) System.out.println( "before interaction " + trv );
         if(debug) System.out.println( "after interaction " + scattered );
         

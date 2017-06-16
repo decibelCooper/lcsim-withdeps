@@ -8,15 +8,15 @@
     <packaging>pom</packaging>
     <name>parent</name>
     <description>parent POM file for lcsim modules</description>
-    <version>3.8</version>
+    <version>3.9-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.lcsim.cacheDir>${user.home}</org.lcsim.cacheDir>
     </properties>
     <scm>
-        <url>http://java.freehep.org/svn/repos/lcdet/list/projects/lcsim/tags/lcsim-3.8/parent</url>
-        <connection>scm:svn:svn://svn.freehep.org/lcdet/projects/lcsim/tags/lcsim-3.8/parent</connection>
-        <developerConnection>scm:svn:svn://svn.freehep.org/lcdet/projects/lcsim/tags/lcsim-3.8/parent</developerConnection>
+        <url>http://java.freehep.org/svn/repos/lcdet/list/projects/lcsim/trunk/parent/</url>
+        <connection>scm:svn:svn://svn.freehep.org/lcdet/projects/lcsim/trunk/parent/</connection>
+        <developerConnection>scm:svn:svn://svn.freehep.org/lcdet/projects/lcsim/trunk/parent/</developerConnection>
     </scm>
     <repositories>
         <repository>
@@ -35,6 +35,11 @@
             <id>freehep-maven-plugin-repo</id>
             <name>Freehep Plugin Repository</name>
 	    <url>file:${project.basedir}/dependencies</url>
+	</pluginRepository>
+        <pluginRepository>
+            <id>freehep-maven-plugin-repo2</id>
+            <name>Freehep Plugin Repository</name>
+	    <url>file:${project.basedir}/../dependencies</url>
 	</pluginRepository>
     </pluginRepositories>
     <distributionManagement>
@@ -60,113 +65,113 @@
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-vertexing</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-event-heprep</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-recon-drivers</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-event-processing</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-trf</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-event-model</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-aida</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-util</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-tracking</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-cal-recon</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-cal-calib</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-detector-framework</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-detector-data</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-conditions</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-analysis</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-math</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-job-manager</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-plugin</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-users</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-distribution</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
                 <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-steering-files</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.lcsim</groupId>
                 <artifactId>lcsim-mc</artifactId>
-                <version>3.8</version>
+                <version>3.9-SNAPSHOT</version>
             </dependency>
             <!-- End org.lcsim dependencies. -->
             <dependency>

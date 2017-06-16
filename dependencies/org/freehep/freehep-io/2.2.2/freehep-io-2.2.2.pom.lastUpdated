@@ -1,7 +1,10 @@
 #NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Tue Jun 13 17:38:23 CDT 2017
-http\://srs.slac.stanford.edu/nexus/content/groups/freehep-maven2-public/.lastUpdated=1497393503584
+#Thu Jun 15 21:58:37 CDT 2017
+http\://srs.slac.stanford.edu/nexus/content/groups/freehep-maven2-public/.lastUpdated=1497581917761
+file\:/home/dblyth/Downloads/temp/lcsim/aida/dependencies/.error=
 http\://srs.slac.stanford.edu/nexus/content/groups/lcsim-maven2-public/.error=
-http\://repo1.maven.org/maven2/.lastUpdated=1497393503819
+http\://repo1.maven.org/maven2/.lastUpdated=1497581917992
 http\://srs.slac.stanford.edu/nexus/content/groups/freehep-maven2-public/.error=
-http\://srs.slac.stanford.edu/nexus/content/groups/lcsim-maven2-public/.lastUpdated=1497393503699
+file\:/home/dblyth/Downloads/temp/lcsim/aida/../dependencies/.lastUpdated=1497394979246
+file\:/home/dblyth/Downloads/temp/lcsim/aida/dependencies/.lastUpdated=1497394979234
+http\://srs.slac.stanford.edu/nexus/content/groups/lcsim-maven2-public/.lastUpdated=1497581917966

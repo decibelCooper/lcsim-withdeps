@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Thu Jun 15 22:00:44 CDT 2017
+lcsim-detector-framework-3.9-SNAPSHOT-bin.jar>=
+lcsim-detector-framework-3.9-SNAPSHOT.jar>=
+lcsim-detector-framework-3.9-SNAPSHOT.pom>=

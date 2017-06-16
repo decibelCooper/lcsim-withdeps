@@ -1,4 +1,6 @@
 #NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Tue Jun 13 17:36:56 CDT 2017
+#Tue Jun 13 17:58:02 CDT 2017
 wagon-provider-api-2.3.jar>central=
+wagon-provider-api-2.3.jar>project.local=
 wagon-provider-api-2.3.pom>central=
+wagon-provider-api-2.3.pom>project.local=

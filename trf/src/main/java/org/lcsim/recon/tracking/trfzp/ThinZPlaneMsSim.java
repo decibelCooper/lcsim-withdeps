@@ -125,7 +125,7 @@ public class ThinZPlaneMsSim extends SimInteractor
             scatterVec[0] /= norm;
             scatterVec[1] /= norm;
             scatterVec[2] /= norm;
-        };
+        }
         
         //now go back to the global coordinate system
         //leave that step out if track coodsys = global coordsys
@@ -148,20 +148,20 @@ public class ThinZPlaneMsSim extends SimInteractor
         {
             finalxz = scatterVec[0];
             finalyz = scatterVec[1];
-        };
+        }
         
-        
+        //Fix this since we use q/p not q/pt
         // calculate new qpt
         //qpt' = qpt * Math.sin theta' / Math.sin theta
-        double fprime = finalxz;
-        double gprime = finalyz;
-        double thetaprime = Math.atan(Math.sqrt(fprime*fprime + gprime*gprime));
-        
-        double zqprime = trackMomentum*Math.sin(thetaprime)/(Math.sqrt(1-zhat*zhat));
-        
+//        double fprime = finalxz;
+//        double gprime = finalyz;
+//        double thetaprime = Math.atan(Math.sqrt(fprime*fprime + gprime*gprime));
+//        
+//        double zqprime = trackMomentum*Math.sin(thetaprime)/(Math.sqrt(1-zhat*zhat));
+//        
         trv.set(IDXDZ, finalxz);
         trv.set(IDYDZ, finalyz);
-        trv.set(IQP, zqprime);
+//        trv.set(IQP, zqprime);
         
         // assume that we don't encounter back-scattering... which is
         // assumed above anyway.

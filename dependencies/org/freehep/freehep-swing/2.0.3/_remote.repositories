@@ -1,4 +1,6 @@
 #NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Tue Jun 13 17:38:48 CDT 2017
+#Thu Jun 15 21:58:57 CDT 2017
 freehep-swing-2.0.3.jar>freehep-repo-public=
 freehep-swing-2.0.3.pom>freehep-repo-public=
+freehep-swing-2.0.3.jar>project.local2=
+freehep-swing-2.0.3.pom>project.local2=

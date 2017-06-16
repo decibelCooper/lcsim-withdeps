@@ -1,4 +1,6 @@
 #NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Tue Jun 13 17:37:52 CDT 2017
+#Thu Jun 15 21:58:28 CDT 2017
 freehep-physics-2.5.jar>freehep-repo-public=
 freehep-physics-2.5.pom>freehep-repo-public=
+freehep-physics-2.5.jar>project.local2=
+freehep-physics-2.5.pom>project.local2=

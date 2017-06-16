@@ -1,4 +1,6 @@
 #NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Tue Jun 13 17:38:36 CDT 2017
+#Thu Jun 15 21:58:48 CDT 2017
 freehep-commandline-2.0.4.jar>freehep-repo-public=
+freehep-commandline-2.0.4.jar>project.local2=
+freehep-commandline-2.0.4.pom>project.local2=
 freehep-commandline-2.0.4.pom>freehep-repo-public=

@@ -233,7 +233,7 @@ public class GTrack
     }
     
     // Return the number of measurements in the fit for this track
-    int numberOfMeasurements()
+    public int numberOfMeasurements()
     {
         // Need to fix this to reflect measurements, not states
         // Need Clusters in GTrackState
