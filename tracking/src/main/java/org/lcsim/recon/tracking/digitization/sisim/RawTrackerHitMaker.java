@@ -22,6 +22,7 @@ import org.lcsim.detector.tracker.silicon.SiSensor;
 import org.lcsim.event.RawTrackerHit;
 import org.lcsim.event.SimTrackerHit;
 import org.lcsim.event.base.BaseRawTrackerHit;
+//import hep.lcio.event.*;   
 
 /**
  *
@@ -76,10 +77,10 @@ public class RawTrackerHitMaker implements SiDigitizer
         IReadout ro = sensor.getReadout();
         List<SimTrackerHit> sim_hits = ro.getHits(SimTrackerHit.class);
         
-//        if (sim_hits.size() != 0)
-//        {
-//            System.out.println("# SimTrackerHits: "+sim_hits.size());
-//        }
+        //if (sim_hits.size() != 0)
+        //{
+        //    System.out.println("# SimTrackerHits: "+sim_hits.size());
+        //}
         
         // Perform charge deposition simulation
         _si_simulation.setSensor(sensor);
@@ -95,8 +96,36 @@ public class RawTrackerHitMaker implements SiDigitizer
                 // Make RawTrackerHits
                 for (Integer readout_cell : digitized_hits.keySet())
                 {
-                    int time = 0;
                     long cell_id = sensor.makeStripId(readout_cell,carrier.charge()).getValue();
+
+                    // Get the time of the hit
+                    int time  = 0;
+                    int count = 0;
+                    for(SimTrackerHit a_sim_hit :  sim_hits)
+                    {
+                      // There appear to be muiltiple cellid schemes which I do not understand at the moment
+                      // however there is only ever one SimTrackerHit. I think the only reason there is an
+                      // array is because it can be null  if the origin of the hit is electronic noise.
+                      //
+                      // Note that time is an integer and the SimTrackerHit time is a double in units of nanoseconds.
+                      // Futhermore, since this time is at most a few ns I record the (integer) time in units of 
+                      // picoseconds so that we have some resolution. We might want to further truncate this 
+                      // to 10ps or more to match the actual resolutions but this is just a first start.
+                      //
+                      // -- Whit
+                      //System.out.println("# SimTrackerHits: cellid   = "+ a_sim_hit.getCellID());
+                      //System.out.println("# SimTrackerHits: cellid64 = "+ a_sim_hit.getCellID64());
+                      //System.out.println("#                  cell_id = "+ cell_id);
+                      //System.out.println("#             readout_cell = "+ readout_cell);
+                      //if( a_sim_hit.getCellID() ==  cell_id){
+                        time += a_sim_hit.getTime()*1000;
+                        count++;
+                        //System.out.println("# SimTrackerHits: time "+ time);
+                      //}
+                    }
+                    if(count > 1 ) {
+                      time = time/count;
+                    }
 
                     //  Retrieve the list of integer data from the readout chip and store as an array of shorts
                     List<Integer> readout_data = digitized_hits.get(readout_cell);

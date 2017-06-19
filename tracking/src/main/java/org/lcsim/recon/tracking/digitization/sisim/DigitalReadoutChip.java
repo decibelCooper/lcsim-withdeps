@@ -156,7 +156,7 @@ public class DigitalReadoutChip implements ReadoutChip {
      * @return hit time
      */
     public int decodeTime(RawTrackerHit hit) {
-        return 0;
+        return 9;
     }
 
     /**

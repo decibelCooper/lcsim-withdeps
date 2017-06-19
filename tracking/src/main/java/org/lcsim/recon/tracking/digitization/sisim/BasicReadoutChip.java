@@ -180,7 +180,7 @@ public class BasicReadoutChip implements ReadoutChip
      */
     public int decodeTime(RawTrackerHit hit)
     {
-        return 0;
+        return 3;
     }
 
     /**

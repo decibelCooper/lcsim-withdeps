@@ -152,7 +152,7 @@ public class GenericReadoutChip implements ReadoutChip {
      * @return hit time
      */
     public int decodeTime(RawTrackerHit hit) {
-        return 0;
+        return hit.getTime();
     }
 
     /**
