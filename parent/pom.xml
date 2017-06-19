@@ -30,27 +30,6 @@
 	    <name>project</name>
 	    <url>file:${project.basedir}/../dependencies</url>
 	</repository>
-<!--        <repository>
-            <id>freehep-repo-public</id>
-            <name>FreeHEP Maven Public</name>
-            <url>http://srs.slac.stanford.edu/nexus/content/groups/freehep-maven2-public/</url>
-        </repository>
-        <repository>
-            <id>lcsim-repo-public</id>
-            <name>LCSIM Public Maven Repository</name>
-            <url>http://srs.slac.stanford.edu/nexus/content/groups/lcsim-maven2-public/</url>
-        </repository>
-        <repository>
-            <id>maven-central-repo</id>
-            <name>Maven repository</name>
-            <url>http://repo1.maven.org/maven2/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository> -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -58,11 +37,11 @@
 	    <name>project</name>
 	    <url>file:${project.basedir}/dependencies</url>
 	</pluginRepository>
-<!--        <pluginRepository>
-            <id>freehep-maven-plugin-repo</id>
-            <name>Freehep Plugin Repository</name>
-            <url>http://srs.slac.stanford.edu/nexus/content/groups/freehep-maven2-public/</url>
-        </pluginRepository> -->
+        <pluginRepository>
+	    <id>project.local2</id>
+	    <name>project</name>
+	    <url>file:${project.basedir}/../dependencies</url>
+	</pluginRepository>
     </pluginRepositories>
     <distributionManagement>
         <repository>
@@ -70,11 +49,6 @@
 	    <name>project</name>
 	    <url>file:${project.basedir}/dependencies</url>
 	</repository>
-<!--        <repository>
-            <id>lcsim-repo-releases</id>
-            <name>LCSIM Releases maven repository</name>
-            <url>http://srs.slac.stanford.edu/nexus/content/repositories/lcsim-maven2-releases/</url>
-        </repository> -->
         <snapshotRepository>
             <id>lcsim-repo-snapshots</id>
             <name>LCSIM Snapshots maven repository</name>
