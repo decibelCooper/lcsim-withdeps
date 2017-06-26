@@ -333,7 +333,7 @@ public class SiTrackerBarrelConverter extends AbstractSubdetectorConverter imple
 
             // String module_lkp_name = layer.getAttributeValue("module");
 
-            int moduleId = 0;
+            int moduleId = 1;
 
             // Loop over the number of modules in phi.
             for ( int phicount = 0; phicount < nphi; phicount++ )
@@ -447,7 +447,7 @@ public class SiTrackerBarrelConverter extends AbstractSubdetectorConverter imple
 
     private void setupSensorDetectorElements( Subdetector subdet )
     {
-        int moduleId = 0;
+        int moduleId = 1;
         for ( IDetectorElement layer : subdet.getDetectorElement().getChildren() )
         {
             for ( IDetectorElement module : layer.getChildren() )
@@ -456,7 +456,7 @@ public class SiTrackerBarrelConverter extends AbstractSubdetectorConverter imple
 
                 IPhysicalVolume modulePhysVol = modulePath.getLeafVolume();
 
-                int sensorId = 0;
+                int sensorId = 1;
                 for ( IPhysicalVolume pv : modulePhysVol.getLogicalVolume().getDaughters() )
                 {
                     // Create the identifier for this sensor.

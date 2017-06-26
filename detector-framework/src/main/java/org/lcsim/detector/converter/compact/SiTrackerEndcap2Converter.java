@@ -134,7 +134,7 @@ public class SiTrackerEndcap2Converter extends AbstractSubdetectorConverter impl
                                     .pack(layerNegId));
                 }
 
-                int moduleNumber = 0;
+                int moduleNumber = 1;
                 for (Iterator j = layerElement.getChildren("ring").iterator(); j.hasNext();)
                 {
                     Element ringElement = (Element)j.next();
@@ -157,12 +157,12 @@ public class SiTrackerEndcap2Converter extends AbstractSubdetectorConverter impl
                     {
                         String moduleBaseName = subdetName + "_layer" + layerId + "_module" + moduleNumber;
 
-                        double x = r * Math.cos(phi);
-                        double y = r * Math.sin(phi);
+                        double x = -r * Math.cos(phi);
+                        double y = -r * Math.sin(phi);
 
                         // Positive endcap module.
                         Translation3D p = new Translation3D(x, y, zstart + dz);
-                        RotationGeant rot = new RotationGeant(-Math.PI / 2, -Math.PI / 2 - phi, 0);
+                        RotationGeant rot = new RotationGeant(Math.PI / 2, Math.PI / 2 + phi, 0);
                         new PhysicalVolume(new Transform3D(p, rot), moduleBaseName, moduleVolume, detector
                                 .getTrackingVolume().getLogicalVolume(), k);
                         String path = "/" + detector.getTrackingVolume().getName() + "/" + moduleBaseName;
@@ -172,7 +172,7 @@ public class SiTrackerEndcap2Converter extends AbstractSubdetectorConverter impl
                         if (reflect)
                         {
                             Translation3D pr = new Translation3D(x, y, -zstart - dz);
-                            RotationGeant rotr = new RotationGeant(-Math.PI / 2, -Math.PI / 2 - phi, Math.PI);
+                            RotationGeant rotr = new RotationGeant(Math.PI / 2, Math.PI / 2 + phi, -Math.PI);
 
                             String path2 =
                                     "/" + detector.getTrackingVolume().getName() + "/" + moduleBaseName + "_reflected";
@@ -224,7 +224,7 @@ public class SiTrackerEndcap2Converter extends AbstractSubdetectorConverter impl
 
         String moduleName = moduleVolume.getName();
 
-        int sensor = 0;
+        int sensor = 1;
         for (SiTrackerModuleComponentParameters component : moduleParameters)
         {
             double thickness = component.getThickness();
@@ -249,12 +249,12 @@ public class SiTrackerEndcap2Converter extends AbstractSubdetectorConverter impl
             double zrot = 0;
             if (sensitive)
             {
-                if (sensor > 1)
+                if (sensor > 2)
                 {
                     throw new RuntimeException("Exceeded maximum of 2 sensors per module.");
                 }
                 // Flip 180 deg for 1st sensor.
-                if (sensor == 0)
+                if (sensor == 1)
                 {
                     zrot = Math.PI;
                 }
@@ -283,7 +283,7 @@ public class SiTrackerEndcap2Converter extends AbstractSubdetectorConverter impl
                 {
                     IPhysicalVolume modulePhysVol = module.getGeometry().getPhysicalVolume();
                     IPhysicalVolumePath modulePath = module.getGeometry().getPath();
-                    int sensorId = 0;
+                    int sensorId = 1;
                     for (IPhysicalVolume pv : modulePhysVol.getLogicalVolume().getDaughters())
                     {
                         if (pv.isSensitive())
