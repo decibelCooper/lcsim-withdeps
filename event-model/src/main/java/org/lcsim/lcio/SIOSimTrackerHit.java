@@ -62,6 +62,9 @@ class SIOSimTrackerHit extends BaseSimTrackerHit
                 pathLength = in.readFloat();
         }
 
+	if (version > 2007)
+	    in.readInt();
+
         // Pointer tag.
         if (version > 1000)
             in.readPTag(this);
