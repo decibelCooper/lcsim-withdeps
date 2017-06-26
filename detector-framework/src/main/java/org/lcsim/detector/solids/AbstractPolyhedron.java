@@ -36,7 +36,8 @@ public abstract class AbstractPolyhedron extends AbstractSolid implements IPolyh
         for (Polygon3D face : getFaces())
         {
             if (GeomOp3D.intersects(point,face)) return Inside.SURFACE;
-            inside = inside && (GeomOp3D.distanceBetween(point,face.getPlane()) < 0);
+            if (!(inside = inside && GeomOp3D.distanceBetween(point,face.getPlane()) < 0))
+		break;
         }
         
         if (inside) return Inside.INSIDE;
